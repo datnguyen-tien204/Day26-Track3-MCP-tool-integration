@@ -1,0 +1,45 @@
+{
+  "_comment": "Lab #26 — Claude Desktop MCP Configuration",
+  "_usage": "Copy the 'mcpServers' section into your claude_desktop_config.json",
+  "_config_paths": {
+    "macOS":   "~/Library/Application Support/Claude/claude_desktop_config.json",
+    "Windows": "%APPDATA%\\Claude\\claude_desktop_config.json",
+    "Linux":   "~/.config/Claude/claude_desktop_config.json"
+  },
+
+  "mcpServers": {
+
+    "lab26-sales-db": {
+      "_description": "Lab #26 custom sales database MCP server (STDIO)",
+      "command": "python",
+      "args": ["-m", "server.main"],
+      "env": {
+        "DB_PATH": "./data/lab26.db"
+      }
+    },
+
+    "lab26-github": {
+      "_description": "Official GitHub MCP server for multi-tool demo",
+      "_note": "Set GITHUB_PERSONAL_ACCESS_TOKEN before using",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-github"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "YOUR_GITHUB_TOKEN_HERE"
+      }
+    },
+
+    "lab26-filesystem": {
+      "_description": "Optional: filesystem MCP for reading local files",
+      "_note": "Replace /path/to/project with your actual project path",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/path/to/your/project"
+      ]
+    }
+  }
+}

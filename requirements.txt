@@ -1,0 +1,16 @@
+# Lab #26 — MCP Server Dependencies
+# Install: pip install -r requirements.txt
+
+# Core MCP SDK
+mcp>=1.0.0
+
+# HTTP transport (BONUS)
+starlette>=0.40.0
+uvicorn[standard]>=0.30.0
+
+# Testing
+pytest>=8.0.0
+pytest-asyncio>=0.23.0
+
+# Dev tools
+python-dotenv>=1.0.0

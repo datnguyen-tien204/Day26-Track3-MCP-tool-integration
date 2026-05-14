@@ -1,0 +1,9 @@
+[DB] Initialized at E:\Working\VinUni-FinalProj\Assignment\assignments\Day26-Track03-MCP_and_A2A_Infrastructure\data\lab26.db
+INFO:     127.0.0.1:55732 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49379 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57478 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58945 - "POST /mcp HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:58961 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49363 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49368 - "POST /mcp HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:49374 - "POST /mcp HTTP/1.1" 200 OK

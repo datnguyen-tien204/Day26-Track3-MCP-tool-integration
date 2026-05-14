@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name            = "lab26-mcp-server"
+version         = "1.0.0"
+description     = "Lab #26 — MCP Server with FastMCP (VinUniversity AICB-P2T3)"
+requires-python = ">=3.11"
+dependencies    = [
+    "mcp>=1.0.0",
+    "starlette>=0.40.0",
+    "uvicorn[standard]>=0.30.0",
+    "python-dotenv>=1.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+]
+
+[project.scripts]
+lab26-server      = "server.main:mcp.run"
+lab26-http-server = "server.http_server:main"
+lab26-init-db     = "scripts.init_db:main"
+
+[tool.pytest.ini_options]
+asyncio_mode    = "auto"
+testpaths       = ["tests"]
+python_files    = ["test_*.py"]
+python_classes  = ["Test*"]
+python_functions= ["test_*"]
+log_cli         = true
+log_cli_level   = "INFO"
+
+[tool.setuptools.packages.find]
+where   = ["."]
+include = ["server*", "scripts*"]

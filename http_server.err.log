@@ -1,0 +1,15 @@
+2026-05-14 12:01:15,231 [INFO] lab26.http — Starting HTTP MCP server on 0.0.0.0:8000
+E:\Working\VinUni-FinalProj\Assignment\assignments\Day26-Track03-MCP_and_A2A_Infrastructure\server\http_server.py:88: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "created_at":  datetime.utcnow().isoformat(),
+2026-05-14 12:01:15,603 [INFO] lab26.http — Loaded token from MCP_AUTH_TOKEN env var.
+INFO:     Started server process [26780]
+INFO:     Waiting for application startup.
+2026-05-14 12:01:15,652 [INFO] mcp.server.streamable_http_manager — StreamableHTTP session manager started
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+2026-05-14 12:07:33,053 [WARNING] lab26.http — Missing/invalid Authorization header from Address(host='127.0.0.1', port=58945)
+2026-05-14 12:07:47,693 [INFO] lab26.http — AUTH OK  token=...-token  scope=['read', 'write']  path=/mcp
+2026-05-14 12:07:47,729 [INFO] mcp.server.streamable_http_manager — Created new transport with session ID: 6f260f5bbeb342728377014146c42ea2
+2026-05-14 12:21:22,738 [WARNING] lab26.http — Missing/invalid Authorization header from Address(host='127.0.0.1', port=49368)
+2026-05-14 12:21:31,583 [INFO] lab26.http — AUTH OK  token=...-token  scope=['read', 'write']  path=/mcp
+2026-05-14 12:21:31,620 [INFO] mcp.server.streamable_http_manager — Created new transport with session ID: 67279701c7374931b604be6af3428a90
