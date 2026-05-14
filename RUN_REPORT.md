@@ -75,6 +75,8 @@ Smoke client kiểm tra trực tiếp các chức năng:
 - `db://schema`
 - `db://stats`
 
+Sau khi đối chiếu rubric, `search_records` đã được bổ sung thêm sắp xếp và phân trang bằng các tham số `order_by`, `order_dir`, `limit`, `offset`. `insert_record` cũng đã được bổ sung trường `record` để trả về payload vừa insert.
+
 ### 2.4. Chạy pytest
 
 Đã chạy:
@@ -86,13 +88,15 @@ Smoke client kiểm tra trực tiếp các chức năng:
 Kết quả:
 
 ```text
-51 passed, 5 warnings
+55 passed, 5 warnings
 ```
 
 Các nhóm test đã pass:
 
 - Search records
+- Search ordering và offset pagination
 - Insert records
+- Insert trả về inserted payload
 - Aggregate data
 - Resources
 - Table schema resource
@@ -380,13 +384,13 @@ Danh sách ảnh cần có:
 
 | Tên file gợi ý | Nội dung |
 |---|---|
-| `01-pytest-51-passed.png` | Terminal hiển thị `51 passed` |
 | `02-inspector-tools.png` | MCP Inspector tab Tools có 3 tools |
 | `03-inspector-resources.png` | MCP Inspector tab Resources |
 | `04-search-products-success.png` | Gọi `search_records` với `products` thành công |
 | `05-search-invalid-table-error.png` | Gọi `search_records` với `nonexistent` trả error |
-| `06-vscode-copilot-mcp.png` | VS Code Copilot dùng MCP server/tool |
-| `07-http-auth.png` | HTTP health, 401 no token, 200 with token |
+| `06-vscode-copilot-tools.png` | VS Code Copilot hiển thị MCP tools của `lab26-sales-db` |
+| `07-vscode-copilot-results.png` | VS Code Copilot gọi MCP tools và trả kết quả phân tích/tìm kiếm |
+| `08-http-auth.png` | HTTP health, 401 no token, 200 with token |
 
 ## 8. Video Demo Cần Nộp
 
@@ -400,7 +404,7 @@ Flow video khoảng 2 phút:
 
 | Thời gian | Nội dung |
 |---|---|
-| 0:00 - 0:25 | Terminal chạy `pytest tests\ -v`, hiển thị `51 passed` |
+| 0:00 - 0:25 | Terminal chạy `pytest tests\ -v`, hiển thị `55 passed` |
 | 0:25 - 0:55 | MCP Inspector: tools list, gọi tool thành công, gọi tool lỗi |
 | 0:55 - 1:35 | VS Code Copilot: chạy 2 prompt dùng MCP |
 | 1:35 - 2:00 | HTTP bonus: `/health`, no-token 401, Bearer-token 200 |
@@ -420,13 +424,13 @@ Day26-Track03-MCP_and_A2A_Infrastructure\
 ├── data\
 └── submission\
     ├── screenshots\
-    │   ├── 01-pytest-51-passed.png
     │   ├── 02-inspector-tools.png
     │   ├── 03-inspector-resources.png
     │   ├── 04-search-products-success.png
     │   ├── 05-search-invalid-table-error.png
-    │   ├── 06-vscode-copilot-mcp.png
-    │   └── 07-http-auth.png
+    │   ├── 06-vscode-copilot-tools.png
+    │   ├── 07-vscode-copilot-results.png
+    │   └── 08-http-auth.png
     └── demo-video.mp4
 ```
 
@@ -435,7 +439,7 @@ Day26-Track03-MCP_and_A2A_Infrastructure\
 Lab 26 đã chạy thành công. MCP server hoạt động với STDIO transport, MCP Inspector, VS Code Copilot và HTTP transport có Bearer token auth. Toàn bộ test tự động đã pass:
 
 ```text
-51 passed
+55 passed
 ```
 
 Các lỗi phát sinh trong quá trình chạy thực tế trên Windows đã được debug và sửa, bao gồm lỗi Unicode console, lỗi HTTP MCP lifespan và lỗi đường dẫn khi chạy MCP Inspector.

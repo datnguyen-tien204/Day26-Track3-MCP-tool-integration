@@ -108,11 +108,14 @@ Server sẽ chạy tại: `http://localhost:8000`
 
 ### 1. `search_records`
 
-Tìm kiếm records trong database. Hỗ trợ filter theo bất kỳ column nào (LIKE matching).
+Tìm kiếm records trong database. Hỗ trợ filter theo bất kỳ column nào (LIKE matching), sắp xếp, và phân trang bằng `limit`/`offset`.
 
 ```python
 # Tìm tất cả sản phẩm Electronics
 search_records("products", {"category": "Electronics"})
+
+# Sắp xếp theo giá giảm dần và lấy trang thứ 2
+search_records("products", limit=5, offset=5, order_by="price", order_dir="desc")
 
 # Tìm khách hàng ở Hanoi
 search_records("customers", {"region": "Hanoi"})
@@ -128,6 +131,9 @@ search_records("orders", {"quarter": "Q3-2025", "status": "completed"})
 | `table`   | string | ✓        | —       | `products` / `customers` / `orders`      |
 | `filters` | dict   | ✗        | null    | `{column: value}` — dùng LIKE matching   |
 | `limit`   | int    | ✗        | 10      | Số rows tối đa (1–100)                   |
+| `offset`  | int    | ✗        | 0       | Số rows bỏ qua để phân trang             |
+| `order_by`| string | ✗        | id      | Column hợp lệ để sắp xếp                 |
+| `order_dir`| string| ✗        | asc     | `asc` hoặc `desc`                        |
 
 ---
 
@@ -162,6 +168,8 @@ insert_record("orders", {
 | `products`  | `name`, `category`, `price`, `stock`                                     |
 | `customers` | `name`, `email`, `region`                                                |
 | `orders`    | `customer_id`, `product_id`, `quantity`, `total_price`, `quarter`        |
+
+Kết quả insert trả về cả `id` và payload `record` vừa được ghi vào database.
 
 ---
 

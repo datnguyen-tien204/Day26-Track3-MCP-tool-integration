@@ -55,47 +55,55 @@ async def search_records(
     table: str,
     filters: dict | None = None,
     limit: int = 10,
+    offset: int = 0,
+    order_by: str | None = None,
+    order_dir: str = "asc",
 ) -> dict:
     """
     Search and retrieve records from the sales database.
 
     Use this tool when you need to find specific rows in any table.
-    Supports partial-match filtering on any column.
+    Supports partial-match filtering, ordering, and offset pagination.
 
     Args:
         table:   Table to query. Must be one of: 'products', 'customers', 'orders'
         filters: Optional {column: value} dict for WHERE conditions (LIKE matching).
                  Example: {"category": "Electronics"} or {"region": "Hanoi"}
         limit:   Max rows to return (1–100, default 10)
+        offset:  Number of rows to skip for pagination (default 0)
+        order_by: Optional column name to sort by. Defaults to id if present.
+        order_dir: Sort direction, either 'asc' or 'desc' (default 'asc')
 
     Returns:
-        {table, records: [...], returned: int, total: int}
+        {table, records: [...], returned: int, total: int, limit: int, offset: int, has_more: bool}
 
     Examples:
         search_records("products", {"category": "Electronics"})
         search_records("customers", {"region": "Hanoi"})
         search_records("orders", {"quarter": "Q3-2025", "status": "completed"})
-        search_records("products")  # returns first 10 products
+        search_records("products", limit=5, offset=5, order_by="price", order_dir="desc")
     """
     VALID_TABLES = {"products", "customers", "orders"}
     if table not in VALID_TABLES:
         return {"error": f"Invalid table '{table}'. Choose from: {sorted(VALID_TABLES)}"}
 
     limit = max(1, min(limit, 100))
+    offset = max(0, offset)
+    order_dir_normalized = order_dir.lower()
+    if order_dir_normalized not in {"asc", "desc"}:
+        return {"error": "order_dir must be either 'asc' or 'desc'"}
 
     try:
         conn = get_connection()
         cursor = conn.cursor()
+        pragma_rows = cursor.execute(f"PRAGMA table_info({table})").fetchall()
+        valid_cols = {row["name"] for row in pragma_rows}
 
         # Build WHERE clause safely (column names validated below)
         where_clause = ""
         params: list = []
 
         if filters:
-            # Get actual column names to prevent injection via column names
-            pragma_rows = cursor.execute(f"PRAGMA table_info({table})").fetchall()
-            valid_cols = {row["name"] for row in pragma_rows}
-
             conditions = []
             for col, val in filters.items():
                 if col not in valid_cols:
@@ -106,9 +114,14 @@ async def search_records(
 
             where_clause = "WHERE " + " AND ".join(conditions)
 
+        sort_column = order_by or ("id" if "id" in valid_cols else next(iter(valid_cols)))
+        if sort_column not in valid_cols:
+            conn.close()
+            return {"error": f"Column '{sort_column}' does not exist in table '{table}'"}
+
         rows = cursor.execute(
-            f"SELECT * FROM {table} {where_clause} LIMIT ?",
-            params + [limit],
+            f"SELECT * FROM {table} {where_clause} ORDER BY {sort_column} {order_dir_normalized.upper()} LIMIT ? OFFSET ?",
+            params + [limit, offset],
         ).fetchall()
 
         total = cursor.execute(
@@ -121,6 +134,11 @@ async def search_records(
             "records":  [dict(r) for r in rows],
             "returned": len(rows),
             "total":    total,
+            "limit":    limit,
+            "offset":   offset,
+            "order_by": sort_column,
+            "order_dir": order_dir_normalized,
+            "has_more": offset + len(rows) < total,
         }
 
     except Exception as exc:
@@ -149,7 +167,7 @@ async def insert_record(table: str, data: dict) -> dict:
                    total_price (float), quarter (str, e.g. 'Q1-2025')
 
     Returns:
-        {success: bool, id: int, message: str}
+        {success: bool, id: int, record: dict, message: str}
 
     Examples:
         insert_record("products", {
@@ -208,11 +226,16 @@ async def insert_record(table: str, data: dict) -> dict:
         )
         conn.commit()
         new_id = cursor.lastrowid
+        inserted = cursor.execute(
+            f"SELECT * FROM {table} WHERE id = ?",
+            (new_id,),
+        ).fetchone()
         conn.close()
 
         return {
             "success": True,
             "id":      new_id,
+            "record":  dict(inserted) if inserted else {"id": new_id, **safe_data},
             "message": f"Record inserted into '{table}' with id={new_id}",
         }
 

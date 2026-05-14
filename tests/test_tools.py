@@ -93,6 +93,38 @@ class TestSearchRecords:
         assert "records" in result
         assert result["returned"] > 0
 
+    @pytest.mark.asyncio
+    async def test_search_supports_ordering(self):
+        from server.main import search_records
+        result = await search_records("products", limit=5, order_by="price", order_dir="desc")
+        prices = [row["price"] for row in result["records"]]
+        assert prices == sorted(prices, reverse=True)
+        assert result["order_by"] == "price"
+        assert result["order_dir"] == "desc"
+
+    @pytest.mark.asyncio
+    async def test_search_supports_offset_pagination(self):
+        from server.main import search_records
+        first_page = await search_records("products", limit=3, offset=0, order_by="id")
+        second_page = await search_records("products", limit=3, offset=3, order_by="id")
+        assert first_page["records"]
+        assert second_page["records"]
+        assert first_page["records"][0]["id"] != second_page["records"][0]["id"]
+        assert second_page["offset"] == 3
+        assert "has_more" in second_page
+
+    @pytest.mark.asyncio
+    async def test_invalid_order_by_returns_error(self):
+        from server.main import search_records
+        result = await search_records("products", order_by="not_a_column")
+        assert "error" in result
+
+    @pytest.mark.asyncio
+    async def test_invalid_order_dir_returns_error(self):
+        from server.main import search_records
+        result = await search_records("products", order_dir="sideways")
+        assert "error" in result
+
 
 # ─── Tool 2: insert_record ───────────────────────────────────────────────────
 
@@ -108,6 +140,10 @@ class TestInsertRecord:
         assert result["success"] is True
         assert "id" in result
         assert result["id"] > 0
+        assert result["record"]["name"] == "Test Product"
+        assert result["record"]["category"] == "Electronics"
+        assert result["record"]["price"] == 1_000_000
+        assert result["record"]["stock"] == 10
 
     @pytest.mark.asyncio
     async def test_insert_valid_customer(self):
